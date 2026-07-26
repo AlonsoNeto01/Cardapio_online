@@ -54,27 +54,29 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' }:
     >
       <div
         className={cn(
-          'w-full bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl',
+          'w-full bg-[var(--surface)] rounded-t-2xl sm:rounded-2xl',
           'max-h-[90vh] overflow-y-auto',
           'animate-slideUp',
+          'border border-[var(--border)]',
           sizes[size]
         )}
+        style={{ boxShadow: 'var(--shadow-elevated)' }}
       >
         {title && (
-          <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-neutral-800">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
+            <h2 className="text-lg font-bold text-[var(--foreground)]">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
               aria-label="Fechar"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
                   d="M15 5L5 15M5 5l10 10"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="1.8"
                   strokeLinecap="round"
                 />
               </svg>

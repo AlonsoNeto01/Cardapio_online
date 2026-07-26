@@ -8,13 +8,13 @@ export default function StoreStatusBanner({ isOpen, message }: StoreStatusBanner
     <div
       className={`w-full py-2.5 px-4 text-center text-sm font-medium transition-colors ${
         isOpen
-          ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 border-b border-green-100 dark:border-green-500/20'
-          : 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-b border-red-100 dark:border-red-500/20'
+          ? 'bg-[var(--primary-light)] text-green-700 dark:text-green-400 border-b border-green-500/15'
+          : 'bg-[var(--accent-red-light)] text-[var(--accent-red)] border-b border-[var(--accent-red)]/15'
       }`}
       id="store-status-banner"
     >
       <span className="inline-flex items-center gap-2">
-        <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+        <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-[var(--accent-red)]'}`} />
         {message}
       </span>
     </div>

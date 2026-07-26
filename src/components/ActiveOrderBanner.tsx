@@ -40,12 +40,13 @@ export default function ActiveOrderBanner() {
 
   return (
     <div 
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-80 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-4 shadow-2xl shadow-green-500/30 z-50 animate-slideUp cursor-pointer hover:scale-[1.02] transition-all duration-300"
+      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-80 text-white rounded-2xl p-4 shadow-2xl z-50 animate-slideUp cursor-pointer hover:scale-[1.02] transition-all duration-300 border border-white/10"
+      style={{ background: 'var(--gradient-cta)', boxShadow: 'var(--shadow-glow-green)' }}
       onClick={() => router.push(`/order/${orderId}`)}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-3xl animate-bounce">🛵</span>
+          <span className="text-3xl animate-bounce-slow">🛵</span>
           <div>
             <p className="font-bold text-sm">Pedido em Andamento</p>
             <p className="text-xs text-green-100 font-medium mt-0.5">Clique para acompanhar</p>
