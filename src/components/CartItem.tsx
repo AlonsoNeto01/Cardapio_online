@@ -14,17 +14,24 @@ export default function CartItemRow({ index }: CartItemRowProps) {
   if (!item) return null;
 
   return (
-    <div className="flex gap-3 py-3 border-b border-gray-100 dark:border-neutral-800 last:border-0 animate-fadeIn">
+    <div className="flex gap-3 py-3.5 border-b border-[var(--border)] last:border-0 animate-fadeIn">
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+        <h4 className="text-sm font-semibold text-[var(--foreground)] truncate">
           {item.product.name}
         </h4>
         {item.observation && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+          <p className="text-xs text-[var(--muted)] mt-0.5 truncate">
             📝 {item.observation}
           </p>
         )}
-        <p className="text-sm font-bold text-green-600 dark:text-green-400 mt-1">
+        {item.addons && item.addons.length > 0 && (
+          <div className="text-xs text-[var(--muted)] mt-0.5">
+            {item.addons.map(a => (
+              <span key={a.id} className="inline-block mr-1">+{a.name}</span>
+            ))}
+          </div>
+        )}
+        <p className="text-sm font-bold text-[var(--primary)] mt-1">
           {formatCurrency((Number(item.product.price) + (item.addons?.reduce((s, a) => s + Number(a.price), 0) || 0)) * item.quantity)}
         </p>
       </div>
@@ -32,24 +39,24 @@ export default function CartItemRow({ index }: CartItemRowProps) {
       <div className="flex items-center gap-1">
         <button
           onClick={() => updateQuantity(index, item.quantity - 1)}
-          className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+          className="w-7 h-7 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-xs font-bold hover:bg-[var(--primary-light)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all duration-200"
           aria-label="Diminuir quantidade"
         >
           −
         </button>
-        <span className="w-7 text-center text-sm font-bold text-gray-900 dark:text-gray-100">
+        <span className="w-7 text-center text-sm font-bold text-[var(--foreground)]">
           {item.quantity}
         </span>
         <button
           onClick={() => updateQuantity(index, item.quantity + 1)}
-          className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+          className="w-7 h-7 rounded-full bg-[var(--surface-elevated)] border border-[var(--border)] flex items-center justify-center text-xs font-bold hover:bg-[var(--primary-light)] hover:text-[var(--primary)] hover:border-[var(--primary)]/30 transition-all duration-200"
           aria-label="Aumentar quantidade"
         >
           +
         </button>
         <button
           onClick={() => removeItem(index)}
-          className="ml-1 w-7 h-7 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center justify-center transition-colors"
+          className="ml-1 w-7 h-7 rounded-full text-[var(--muted)] hover:bg-[var(--accent-red-light)] hover:text-[var(--accent-red)] flex items-center justify-center transition-all duration-200"
           aria-label="Remover item"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

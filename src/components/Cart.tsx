@@ -55,24 +55,31 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-md h-full bg-white dark:bg-neutral-900 shadow-2xl flex flex-col animate-slideRight">
+      <div className="relative w-full max-w-md h-full bg-[var(--surface)] shadow-2xl flex flex-col animate-slideRight border-l border-[var(--border)]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-neutral-800">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            🛒 Carrinho
-            {items.length > 0 && (
-              <span className="text-sm font-normal text-gray-400">
-                ({items.length} {items.length === 1 ? 'item' : 'itens'})
-              </span>
-            )}
-          </h2>
+        <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style={{ background: 'var(--primary-light)' }}>
+              🛒
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[var(--foreground)]">
+                Carrinho
+              </h2>
+              {items.length > 0 && (
+                <p className="text-xs text-[var(--muted)]">
+                  {items.length} {items.length === 1 ? 'item' : 'itens'}
+                </p>
+              )}
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-[var(--surface-elevated)] transition-colors"
             aria-label="Fechar carrinho"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
           </button>
         </div>
@@ -81,13 +88,18 @@ export default function Cart({ isOpen, onClose }: CartProps) {
         <div className="flex-1 overflow-y-auto px-5">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <span className="text-5xl mb-4">🛒</span>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'var(--primary-light)' }}>
+                <span className="text-4xl">🛒</span>
+              </div>
+              <p className="text-[var(--foreground)] font-semibold">
                 Seu carrinho está vazio
               </p>
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                Adicione frutas ao seu pedido!
+              <p className="text-sm text-[var(--muted)] mt-1">
+                Adicione frutas frescas ao seu pedido!
               </p>
+              <Button onClick={onClose} variant="secondary" className="mt-6" size="sm">
+                Ver Cardápio
+              </Button>
             </div>
           ) : (
             <div className="py-2">
@@ -100,22 +112,22 @@ export default function Cart({ isOpen, onClose }: CartProps) {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-gray-100 dark:border-neutral-800 p-5 space-y-4">
+          <div className="border-t border-[var(--border)] p-5 space-y-4 bg-[var(--surface-elevated)]">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Subtotal</span>
-              <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              <span className="text-sm text-[var(--muted)]">Subtotal</span>
+              <span className="text-xl font-bold text-[var(--primary)]">
                 {formatCurrency(total)}
               </span>
             </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+            <p className="text-xs text-[var(--muted)] flex items-center gap-1">
               🛵 Taxa de entrega calculada no checkout
             </p>
             <Button onClick={handleCheckout} className="w-full" size="lg" id="go-to-checkout-btn">
-              Ir para Checkout
+              Ir para Checkout →
             </Button>
             <button
               onClick={clearCart}
-              className="w-full text-center text-sm text-red-500 hover:text-red-600 dark:text-red-400 transition-colors"
+              className="w-full text-center text-sm text-[var(--accent-red)] hover:text-red-700 dark:hover:text-red-300 transition-colors"
             >
               Limpar carrinho
             </button>
