@@ -15,55 +15,61 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   return (
     <button
       onClick={onClick}
-      className="group flex w-full text-left bg-white dark:bg-[#141414] border border-gray-100 dark:border-neutral-800/50 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all duration-300 p-3 gap-4 items-center focus:outline-none focus:ring-2 focus:ring-green-500/40"
+      className="group flex w-full text-left bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden card-interactive hover:bg-[var(--surface-elevated)] transition-all duration-300 p-3 gap-4 items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/40"
       id={`product-card-${product.id}`}
     >
       {/* Image */}
-      <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 bg-gray-100 dark:bg-neutral-800 rounded-lg overflow-hidden">
+      <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-xl overflow-hidden bg-[var(--skeleton-base)]">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 112px, 112px"
+            className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+            sizes="(max-width: 640px) 96px, 112px"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-3xl opacity-40">
+          <div className="w-full h-full flex items-center justify-center text-3xl opacity-40 bg-[var(--primary-light)]">
             🍉
           </div>
+        )}
+        {/* Badges over image */}
+        {product.is_highlight && (
+          <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-bold rounded-md text-white shadow-md" style={{ background: 'var(--gradient-cta)' }}>
+            ⭐ Destaque
+          </span>
         )}
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0 py-1">
-        <div className="flex items-center gap-2 mb-1.5">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 leading-tight">
-            {product.name}
-          </h3>
-          {product.is_highlight && (
-            <span className="shrink-0 text-green-500 text-sm" title="Destaque da Casa">
-              ⭐
-            </span>
-          )}
-        </div>
-        
+        <h3 className="font-semibold text-[var(--foreground)] line-clamp-2 leading-tight group-hover:text-[var(--primary)] transition-colors duration-200">
+          {product.name}
+        </h3>
+
         {product.description && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-2 leading-relaxed">
+          <p className="text-xs text-[var(--muted)] line-clamp-2 mt-1.5 leading-relaxed">
             {product.description}
           </p>
         )}
-        
-        <div className="flex items-center justify-between mt-auto">
-          <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+
+        <div className="flex items-center justify-between mt-2.5">
+          <span className="text-base font-bold text-[var(--primary)]">
             {formatCurrency(product.price)}
           </span>
           {product.has_free_shipping && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--primary-light)] text-green-700 dark:text-green-400 border border-green-500/15">
               🚚 Frete Grátis
             </span>
           )}
         </div>
+      </div>
+
+      {/* Add hint icon */}
+      <div className="shrink-0 w-8 h-8 rounded-full bg-[var(--primary-light)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:scale-110">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
       </div>
     </button>
   );
