@@ -91,8 +91,8 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
 
   return (
     <Modal isOpen={!!product} onClose={onClose} size="md">
-      {/* Image */}
-      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-100 dark:bg-neutral-800 -mt-1 mb-5">
+      {/* Image with overlay gradient */}
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[var(--skeleton-base)] -mt-1 mb-5">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -102,71 +102,75 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             sizes="(max-width: 640px) 100vw, 512px"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl opacity-30">
+          <div className="w-full h-full flex items-center justify-center text-6xl opacity-30 bg-[var(--primary-light)]">
             🍉
           </div>
         )}
-        {product.is_highlight && (
-          <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white text-xs font-bold rounded-full shadow-lg">
-            ⭐ Destaque
+        {/* Bottom gradient for text readability */}
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/50 to-transparent" />
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex gap-2">
+          {product.is_highlight && (
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-full text-white shadow-lg" style={{ background: 'var(--gradient-cta)' }}>
+              ⭐ Destaque
+            </span>
+          )}
+          {product.has_free_shipping && (
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white/90 dark:bg-black/60 text-green-700 dark:text-green-400 shadow-lg backdrop-blur-sm">
+              🚚 Frete Grátis
+            </span>
+          )}
+        </div>
+        {/* Price over image */}
+        <div className="absolute bottom-3 right-3">
+          <span className="text-2xl font-bold text-white drop-shadow-lg">
+            {formatCurrency(product.price)}
           </span>
-        )}
+        </div>
       </div>
 
       {/* Info */}
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+      <h2 className="text-2xl font-bold text-[var(--foreground)]">
         {product.name}
       </h2>
       {product.description && (
-        <p className="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p className="mt-2 text-[var(--muted)] leading-relaxed">
           {product.description}
         </p>
       )}
-      <p className="mt-3 text-2xl font-bold text-green-600 dark:text-green-400">
-        {formatCurrency(product.price)}
-      </p>
-      {product.has_free_shipping && (
-        <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400">
-          🚚 Frete Grátis
-        </span>
-      )}
 
-      {/* Observation */}
-      <div className="mt-5">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-          Observações (opcional)
-        </label>
-        <textarea
-          value={observation}
-          onChange={(e) => setObservation(e.target.value)}
-          placeholder="Ex: Bem gelado, sem sal..."
-          className="w-full h-20 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 resize-none transition-all"
-          id="product-observation"
-        />
-      </div>
+      {/* Addons skeleton loading */}
+      {loadingAddons && (
+        <div className="mt-6 space-y-4">
+          <div className="skeleton h-12 w-full rounded-xl" />
+          <div className="skeleton h-32 w-full rounded-xl" />
+        </div>
+      )}
 
       {/* Addons */}
       {!loadingAddons && addonGroups.length > 0 && (
-        <div className="mt-6 space-y-6">
+        <div className="mt-6 space-y-5">
           {addonGroups.map((group) => {
             const selected = selectedAddons[group.id] || [];
             const isFulfilled = !group.is_mandatory || selected.length > 0;
             
             return (
-              <div key={group.id} className="border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden bg-gray-50 dark:bg-neutral-800/30">
-                <div className="bg-gray-100 dark:bg-neutral-800 px-4 py-3 flex justify-between items-center">
+              <div key={group.id} className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--surface-elevated)]">
+                {/* Group header */}
+                <div className="px-4 py-3 flex justify-between items-center border-b border-[var(--border)]" style={{ background: 'var(--glass-bg)' }}>
                   <div>
-                    <h4 className="font-bold text-gray-900 dark:text-gray-100">{group.name}</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <h4 className="font-bold text-[var(--foreground)] text-sm">{group.name}</h4>
+                    <p className="text-xs text-[var(--muted)]">
                       {group.max_choices === 1 ? 'Escolha 1 opção' : `Escolha até ${group.max_choices} opções`}
                     </p>
                   </div>
                   {group.is_mandatory && (
-                    <span className={`text-xs font-bold px-2 py-1 rounded ${isFulfilled ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'}`}>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full transition-colors ${isFulfilled ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'}`}>
                       {isFulfilled ? '✓ OK' : 'Obrigatório'}
                     </span>
                   )}
                 </div>
+                {/* Items */}
                 <div className="p-2 space-y-1">
                   {group.items?.map(item => {
                     const isChecked = selected.some(a => a.id === item.id);
@@ -175,11 +179,11 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                     return (
                       <label 
                         key={item.id} 
-                        className={`flex justify-between items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                        className={`flex justify-between items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                           isChecked 
-                            ? 'border-green-500 bg-green-50 dark:bg-green-500/10' 
-                            : 'border-transparent hover:bg-gray-200 dark:hover:bg-neutral-700/50'
-                        } ${disabled && !isChecked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            ? 'border-[var(--primary)] bg-[var(--primary-light)]' 
+                            : 'border-transparent hover:bg-[var(--surface-elevated)]'
+                        } ${disabled && !isChecked ? 'opacity-40 cursor-not-allowed' : ''}`}
                       >
                         <div className="flex items-center gap-3">
                           <input
@@ -188,12 +192,12 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                             checked={isChecked}
                             disabled={disabled && !isChecked}
                             onChange={() => handleAddonSelect(group, item)}
-                            className="w-5 h-5 text-green-500 border-gray-300 focus:ring-green-500"
+                            className="w-5 h-5 text-green-500 border-gray-300 focus:ring-green-500 accent-[var(--primary)]"
                           />
-                          <span className="font-medium text-sm text-gray-900 dark:text-gray-100">{item.name}</span>
+                          <span className="font-medium text-sm text-[var(--foreground)]">{item.name}</span>
                         </div>
                         {Number(item.price) > 0 && (
-                          <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                          <span className="text-sm font-semibold text-[var(--primary)]">
                             + {formatCurrency(item.price)}
                           </span>
                         )}
@@ -207,23 +211,37 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
         </div>
       )}
 
+      {/* Observation */}
+      <div className="mt-5">
+        <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+          Observações <span className="text-[var(--muted)] font-normal">(opcional)</span>
+        </label>
+        <textarea
+          value={observation}
+          onChange={(e) => setObservation(e.target.value)}
+          placeholder="Ex: Bem gelado, sem sal..."
+          className="w-full h-20 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-glow)] resize-none transition-all duration-200"
+          id="product-observation"
+        />
+      </div>
+
       {/* Quantity + Add */}
       <div className="mt-5 flex items-center gap-4">
         {/* Quantity Selector */}
-        <div className="flex items-center border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden">
+        <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--surface-elevated)]">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-11 h-11 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors text-lg font-bold"
+            className="w-11 h-11 flex items-center justify-center text-[var(--muted)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)] transition-colors text-lg font-bold"
             aria-label="Diminuir quantidade"
           >
             −
           </button>
-          <span className="w-11 h-11 flex items-center justify-center text-sm font-bold text-gray-900 dark:text-gray-100 border-x border-gray-200 dark:border-neutral-700">
+          <span className="w-11 h-11 flex items-center justify-center text-sm font-bold text-[var(--foreground)] border-x border-[var(--border)]">
             {quantity}
           </span>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="w-11 h-11 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors text-lg font-bold"
+            className="w-11 h-11 flex items-center justify-center text-[var(--muted)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)] transition-colors text-lg font-bold"
             aria-label="Aumentar quantidade"
           >
             +
