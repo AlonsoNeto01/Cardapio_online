@@ -139,16 +139,19 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
   if (success) {
     return (
       <div className="text-center py-16 animate-fadeIn">
-        <span className="text-6xl block mb-4">🎉</span>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        {/* Success celebration */}
+        <div className="w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6 animate-scaleIn" style={{ background: 'var(--gradient-cta)' }}>
+          <span className="text-4xl">🎉</span>
+        </div>
+        <h2 className="text-2xl font-bold text-[var(--foreground)]">
           Pedido enviado com sucesso!
         </h2>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-[var(--muted)]">
           Seu pedido foi registrado! Já estamos separando suas frutas! 🍍
         </p>
-        <p className="mt-4 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-xl max-w-sm mx-auto">
+        <div className="mt-4 text-sm bg-[var(--accent-yellow-light)] border border-[var(--accent-yellow)]/20 text-[var(--accent-yellow)] p-4 rounded-xl max-w-sm mx-auto">
           ⚠️ Se você não foi redirecionado automaticamente para o WhatsApp, clique no botão verde abaixo para enviar seu pedido manualmente.
-        </p>
+        </div>
 
         {whatsappUrl && (
           <a
@@ -177,7 +180,7 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
 
         <button
           onClick={() => router.push('/')}
-          className="block mx-auto mt-8 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          className="block mx-auto mt-8 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
         >
           ← Voltar ao cardápio
         </button>
@@ -188,11 +191,13 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
   if (items.length === 0) {
     return (
       <div className="text-center py-16">
-        <span className="text-5xl block mb-4">🛒</span>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+        <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--primary-light)' }}>
+          <span className="text-4xl">🛒</span>
+        </div>
+        <h2 className="text-xl font-bold text-[var(--foreground)]">
           Carrinho vazio
         </h2>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-[var(--muted)]">
           Adicione itens ao carrinho antes de fazer o checkout.
         </p>
         <Button onClick={() => router.push('/')} className="mt-6">
@@ -202,12 +207,46 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
     );
   }
 
+  // Current step indicator
+  const currentStep = 1;
+  const steps = [
+    { num: 1, label: 'Resumo' },
+    { num: 2, label: 'Dados' },
+    { num: 3, label: 'Pagamento' },
+  ];
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Progress steps */}
+      <div className="flex items-center justify-center gap-2 mb-2">
+        {steps.map((step, i) => (
+          <div key={step.num} className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+              step.num <= currentStep
+                ? 'text-white'
+                : 'bg-[var(--surface-elevated)] text-[var(--muted)] border border-[var(--border)]'
+            }`}
+            style={step.num <= currentStep ? { background: 'var(--gradient-cta)' } : {}}
+            >
+              {step.num}
+            </div>
+            <span className={`text-xs font-medium hidden sm:inline ${step.num <= currentStep ? 'text-[var(--foreground)]' : 'text-[var(--muted)]'}`}>
+              {step.label}
+            </span>
+            {i < steps.length - 1 && (
+              <div className={`w-8 sm:w-12 h-px ${step.num < currentStep ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`} />
+            )}
+          </div>
+        ))}
+      </div>
+
       {/* Resumo do Pedido */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 p-5">
-        <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">📋 Resumo do Pedido</h3>
-        <div className="space-y-3">
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--border)] flex items-center gap-2">
+          <span className="text-base">📋</span>
+          <h3 className="font-bold text-[var(--foreground)]">Resumo do Pedido</h3>
+        </div>
+        <div className="p-5 space-y-3">
           {items.map((item, i) => {
             const addonsTotal = item.addons?.reduce((sum, a) => sum + Number(a.price), 0) || 0;
             const itemTotal = (Number(item.product.price) + addonsTotal) * item.quantity;
@@ -215,21 +254,21 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
             return (
               <div key={i} className="flex justify-between items-start text-sm">
                 <div>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                  <span className="font-medium text-[var(--foreground)]">
                     {item.quantity}x {item.product.name}
                   </span>
                   {item.addons && item.addons.length > 0 && (
-                    <div className="text-xs text-gray-500 mt-1 pl-2 border-l-2 border-gray-200 dark:border-neutral-700">
+                    <div className="text-xs text-[var(--muted)] mt-1 pl-2 border-l-2 border-[var(--border)]">
                       {item.addons.map(a => (
                         <div key={a.id}>+ {a.name}</div>
                       ))}
                     </div>
                   )}
                   {item.observation && (
-                    <p className="text-xs text-gray-400 mt-0.5">📝 {item.observation}</p>
+                    <p className="text-xs text-[var(--muted)] mt-0.5">📝 {item.observation}</p>
                   )}
                 </div>
-                <span className="font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap ml-4">
+                <span className="font-semibold text-[var(--foreground)] whitespace-nowrap ml-4">
                   {formatCurrency(itemTotal)}
                 </span>
               </div>
@@ -237,29 +276,29 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
           })}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800 space-y-2">
+        <div className="px-5 pb-5 pt-3 border-t border-[var(--border)] space-y-2.5">
           <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-            <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(subtotal)}</span>
+            <span className="text-[var(--muted)]">Subtotal</span>
+            <span className="font-medium text-[var(--foreground)]">{formatCurrency(subtotal)}</span>
           </div>
           <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+            <span className="text-[var(--muted)] flex items-center gap-1">
               🛵 Taxa de entrega
             </span>
-            <span className="font-medium text-gray-900 dark:text-gray-100">
-              {deliveryFee > 0 ? formatCurrency(deliveryFee) : 'Grátis'}
+            <span className="font-medium text-[var(--foreground)]">
+              {deliveryFee > 0 ? formatCurrency(deliveryFee) : <span className="text-[var(--primary)] font-bold">Grátis</span>}
             </span>
           </div>
           {allItemsFreeShipping && (
-            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-xl">
-              <span className="text-green-600 dark:text-green-400 text-sm font-semibold">
+            <div className="flex items-center gap-2 px-3 py-2 bg-[var(--primary-light)] border border-green-500/15 rounded-xl">
+              <span className="text-[var(--primary)] text-sm font-semibold">
                 🎉 Frete grátis aplicado! Todos os itens possuem frete grátis.
               </span>
             </div>
           )}
-          <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-neutral-800">
-            <span className="font-bold text-gray-900 dark:text-gray-100">Total</span>
-            <span className="text-xl font-bold text-green-600 dark:text-green-400">
+          <div className="flex justify-between items-center pt-3 border-t border-[var(--border)]">
+            <span className="font-bold text-[var(--foreground)]">Total</span>
+            <span className="text-xl font-bold text-[var(--primary)]">
               {formatCurrency(grandTotal)}
             </span>
           </div>
@@ -267,103 +306,113 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
       </div>
 
       {/* Dados do Cliente */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 p-5 space-y-4">
-        <h3 className="font-bold text-gray-900 dark:text-gray-100">👤 Seus Dados</h3>
-        <Input
-          id="customer-name"
-          label="Nome"
-          placeholder="Seu nome completo"
-          value={formData.name}
-          onChange={(e) => handleChange('name', e.target.value)}
-          required
-        />
-        <Input
-          id="customer-phone"
-          label="WhatsApp"
-          placeholder="(00) 00000-0000"
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => handleChange('phone', e.target.value)}
-          required
-        />
-        <div className="space-y-1">
-          <label htmlFor="neighborhood" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Bairro (Taxa de Entrega)
-          </label>
-          <select
-            id="neighborhood"
-            value={formData.neighborhood_id}
-            onChange={(e) => handleChange('neighborhood_id', e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-gray-900 dark:text-gray-100"
-          >
-            <option value="">Selecione seu bairro...</option>
-            {neighborhoods.filter(n => n.is_active).map(n => (
-              <option key={n.id} value={n.id}>
-                {n.name} — {formatCurrency(n.fee)}
-              </option>
-            ))}
-          </select>
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--border)] flex items-center gap-2">
+          <span className="text-base">👤</span>
+          <h3 className="font-bold text-[var(--foreground)]">Seus Dados</h3>
         </div>
-        <Input
-          id="customer-address"
-          label="Endereço de Entrega (Rua, Número, Complemento)"
-          placeholder="Rua, número, complemento"
-          value={formData.address}
-          onChange={(e) => handleChange('address', e.target.value)}
-          required
-        />
+        <div className="p-5 space-y-4">
+          <Input
+            id="customer-name"
+            label="Nome"
+            placeholder="Seu nome completo"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            required
+          />
+          <Input
+            id="customer-phone"
+            label="WhatsApp"
+            placeholder="(00) 00000-0000"
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => handleChange('phone', e.target.value)}
+            required
+          />
+          <div className="space-y-1.5">
+            <label htmlFor="neighborhood" className="block text-sm font-medium text-[var(--foreground)]">
+              Bairro <span className="text-[var(--muted)] font-normal">(Taxa de Entrega)</span>
+            </label>
+            <select
+              id="neighborhood"
+              value={formData.neighborhood_id}
+              onChange={(e) => handleChange('neighborhood_id', e.target.value)}
+              required
+              className="w-full px-4 py-3 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-xl focus:ring-2 focus:ring-[var(--primary-glow)] focus:border-[var(--primary)] transition-all text-[var(--foreground)]"
+            >
+              <option value="">Selecione seu bairro...</option>
+              {neighborhoods.filter(n => n.is_active).map(n => (
+                <option key={n.id} value={n.id}>
+                  {n.name} — {formatCurrency(n.fee)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Input
+            id="customer-address"
+            label="Endereço de Entrega (Rua, Número, Complemento)"
+            placeholder="Rua, número, complemento"
+            value={formData.address}
+            onChange={(e) => handleChange('address', e.target.value)}
+            required
+          />
+        </div>
       </div>
 
       {/* Pagamento */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 p-5 space-y-4">
-        <h3 className="font-bold text-gray-900 dark:text-gray-100">💳 Forma de Pagamento</h3>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { value: 'pix', label: '💠 Pix' },
-            { value: 'cartao', label: '💳 Cartão' },
-            { value: 'dinheiro', label: '💵 Dinheiro' },
-          ].map((method) => (
-            <button
-              key={method.value}
-              type="button"
-              onClick={() => handleChange('payment_method', method.value)}
-              className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
-                formData.payment_method === method.value
-                  ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 dark:border-green-400'
-                  : 'border-gray-200 dark:border-neutral-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-neutral-600'
-              }`}
-            >
-              {method.label}
-            </button>
-          ))}
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--border)] flex items-center gap-2">
+          <span className="text-base">💳</span>
+          <h3 className="font-bold text-[var(--foreground)]">Forma de Pagamento</h3>
         </div>
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { value: 'pix', label: '💠 Pix' },
+              { value: 'cartao', label: '💳 Cartão' },
+              { value: 'dinheiro', label: '💵 Dinheiro' },
+            ].map((method) => (
+              <button
+                key={method.value}
+                type="button"
+                onClick={() => handleChange('payment_method', method.value)}
+                className={`py-3.5 px-4 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${
+                  formData.payment_method === method.value
+                    ? 'border-[var(--primary)] bg-[var(--primary-light)] text-[var(--primary)]'
+                    : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)]/30 hover:bg-[var(--surface-elevated)]'
+                }`}
+              >
+                {method.label}
+              </button>
+            ))}
+          </div>
 
-        {formData.payment_method === 'dinheiro' && (
-          <Input
-            id="change-for"
-            label="Troco para quanto?"
-            placeholder={`Mínimo: ${formatCurrency(grandTotal)}`}
-            type="number"
-            step="0.01"
-            min={grandTotal}
-            value={formData.change_for}
-            onChange={(e) => handleChange('change_for', e.target.value)}
-          />
-        )}
+          {formData.payment_method === 'dinheiro' && (
+            <Input
+              id="change-for"
+              label="Troco para quanto?"
+              placeholder={`Mínimo: ${formatCurrency(grandTotal)}`}
+              type="number"
+              step="0.01"
+              min={grandTotal}
+              value={formData.change_for}
+              onChange={(e) => handleChange('change_for', e.target.value)}
+            />
+          )}
+        </div>
       </div>
 
       {/* Loja Fechada */}
       {!isStoreOpen && (
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl p-5 text-center">
-          <p className="text-red-700 dark:text-red-400 font-semibold">
+        <div className="bg-[var(--accent-red-light)] border border-[var(--accent-red)]/20 rounded-2xl p-5 text-center">
+          <p className="text-[var(--accent-red)] font-semibold">
             🔒 A loja está fechada no momento. Você não pode finalizar o pedido.
           </p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-4 text-sm text-red-700 dark:text-red-400">
+        <div className="bg-[var(--accent-red-light)] border border-[var(--accent-red)]/20 rounded-xl p-4 text-sm text-[var(--accent-red)]">
           {error}
         </div>
       )}
