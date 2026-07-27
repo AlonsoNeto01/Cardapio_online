@@ -6,6 +6,7 @@ import { getSupabaseImageUrl } from '@/lib/utils';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import HomeClient from './HomeClient';
+import HomeCatalog from './HomeCatalog';
 import type { Category, Product } from '@/lib/types';
 
 export default async function Home() {
@@ -121,16 +122,8 @@ export default async function Home() {
           </section>
         )}
 
-        {/* Categorias */}
-        <HomeClient categories={categories} products={products} />
-
-        {/* Produtos sem categoria */}
-        {products.filter((p) => !p.category_id).length > 0 && (
-          <HomeClient
-            categories={[{ id: 'uncategorized', name: '📦 Outros', sort_order: 999, created_at: '' }]}
-            products={products.filter((p) => !p.category_id)}
-          />
-        )}
+        {/* Catálogo com Busca Única */}
+        <HomeCatalog categories={categories} products={products} />
 
         {products.length === 0 && (
           <div className="text-center py-20 animate-fadeIn">

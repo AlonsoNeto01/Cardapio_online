@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { revalidatePath } from 'next/cache';
 import type { OrderStatus, SerializedAddon } from '@/lib/types';
 
@@ -22,7 +23,7 @@ export async function createOrder(data: {
     addons?: SerializedAddon[];
   }[];
 }) {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   // Inserir pedido
   const { data: order, error: orderError } = await supabase
@@ -100,7 +101,7 @@ export async function getOrders() {
 }
 
 export async function getOrderById(orderId: string) {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const { data, error } = await supabase
     .from('orders')

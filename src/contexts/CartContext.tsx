@@ -7,15 +7,15 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import type { CartItem, Product } from '@/lib/types';
+import type { CartItem, Product, AddonItem } from '@/lib/types';
 
 // ============================================
 // Actions
 // ============================================
 type CartAction =
-  | { type: 'ADD_ITEM'; product: Product; quantity: number; observation: string; addons: import('@/lib/types').AddonItem[] }
-  | { type: 'REMOVE_ITEM'; index: number }
-  | { type: 'UPDATE_QUANTITY'; index: number; quantity: number }
+  | { type: 'ADD_ITEM'; product: Product; quantity: number; observation: string; addons: AddonItem[] }
+  | { type: 'REMOVE_ITEM'; id: string }
+  | { type: 'UPDATE_QUANTITY'; id: string; quantity: number }
   | { type: 'CLEAR_CART' }
   | { type: 'LOAD_CART'; items: CartItem[] };
 
@@ -64,6 +64,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         newItems = [
           ...state.items,
           {
+            id: crypto.randomUUID(),
             product: action.product,
             quantity: action.quantity,
             observation: action.observation,
@@ -80,7 +81,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
 
     case 'REMOVE_ITEM': {
-      const newItems = state.items.filter((_, i) => i !== action.index);
+      const newItems = state.items.filter((item) => item.id !== action.id);
       return {
         items: newItems,
         total: calculateTotal(newItems),
@@ -90,15 +91,15 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
     case 'UPDATE_QUANTITY': {
       if (action.quantity <= 0) {
-        const newItems = state.items.filter((_, i) => i !== action.index);
+        const newItems = state.items.filter((item) => item.id !== action.id);
         return {
           items: newItems,
           total: calculateTotal(newItems),
           itemCount: calculateItemCount(newItems),
         };
       }
-      const newItems = state.items.map((item, i) =>
-        i === action.index ? { ...item, quantity: action.quantity } : item
+      const newItems = state.items.map((item) =>
+        item.id === action.id ? { ...item, quantity: action.quantity } : item
       );
       return {
         items: newItems,
@@ -110,12 +111,17 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'CLEAR_CART':
       return { items: [], total: 0, itemCount: 0 };
 
-    case 'LOAD_CART':
+    case 'LOAD_CART': {
+      const sanitizedItems = action.items.map((item) => ({
+        ...item,
+        id: item.id || crypto.randomUUID(),
+      }));
       return {
-        items: action.items,
-        total: calculateTotal(action.items),
-        itemCount: calculateItemCount(action.items),
+        items: sanitizedItems,
+        total: calculateTotal(sanitizedItems),
+        itemCount: calculateItemCount(sanitizedItems),
       };
+    }
 
     default:
       return state;
@@ -129,9 +135,9 @@ interface CartContextType {
   items: CartItem[];
   total: number;
   itemCount: number;
-  addItem: (product: Product, quantity: number, observation: string, addons: import('@/lib/types').AddonItem[]) => void;
-  removeItem: (index: number) => void;
-  updateQuantity: (index: number, quantity: number) => void;
+  addItem: (product: Product, quantity: number, observation: string, addons: AddonItem[]) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -166,16 +172,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [state.items]);
 
-  const addItem = (product: Product, quantity: number, observation: string, addons: import('@/lib/types').AddonItem[] = []) => {
+  const addItem = (product: Product, quantity: number, observation: string, addons: AddonItem[] = []) => {
     dispatch({ type: 'ADD_ITEM', product, quantity, observation, addons });
   };
 
-  const removeItem = (index: number) => {
-    dispatch({ type: 'REMOVE_ITEM', index });
+  const removeItem = (id: string) => {
+    dispatch({ type: 'REMOVE_ITEM', id });
   };
 
-  const updateQuantity = (index: number, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', index, quantity });
+  const updateQuantity = (id: string, quantity: number) => {
+    dispatch({ type: 'UPDATE_QUANTITY', id, quantity });
   };
 
   const clearCart = () => {

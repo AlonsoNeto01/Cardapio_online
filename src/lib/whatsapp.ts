@@ -38,7 +38,17 @@ export function buildWhatsAppMessage(data: WhatsAppOrderData): string {
   lines.push('');
 
   for (const item of data.items) {
-    lines.push(`  ▸ ${item.quantity}x ${item.product.name} — ${formatCurrency(item.product.price * item.quantity)}`);
+    const addonsSum = item.addons?.reduce((acc, addon) => acc + Number(addon.price || 0), 0) || 0;
+    const itemTotalPrice = (Number(item.product.price) + addonsSum) * item.quantity;
+
+    lines.push(`  ▸ ${item.quantity}x ${item.product.name} — ${formatCurrency(itemTotalPrice)}`);
+
+    if (item.addons && item.addons.length > 0) {
+      for (const addon of item.addons) {
+        lines.push(`    + ${addon.name} — ${formatCurrency(addon.price)}`);
+      }
+    }
+
     if (item.observation) {
       lines.push(`    📝 _${item.observation}_`);
     }

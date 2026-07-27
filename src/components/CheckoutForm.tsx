@@ -247,12 +247,12 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
           <h3 className="font-bold text-[var(--foreground)]">Resumo do Pedido</h3>
         </div>
         <div className="p-5 space-y-3">
-          {items.map((item, i) => {
+          {items.map((item) => {
             const addonsTotal = item.addons?.reduce((sum, a) => sum + Number(a.price), 0) || 0;
             const itemTotal = (Number(item.product.price) + addonsTotal) * item.quantity;
             
             return (
-              <div key={i} className="flex justify-between items-start text-sm">
+              <div key={item.id} className="flex justify-between items-start text-sm">
                 <div>
                   <span className="font-medium text-[var(--foreground)]">
                     {item.quantity}x {item.product.name}

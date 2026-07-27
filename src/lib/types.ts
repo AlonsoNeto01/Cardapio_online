@@ -96,6 +96,7 @@ export interface OrderItem {
 }
 
 export interface CartItem {
+  id: string;
   product: Product;
   quantity: number;
   observation: string;

@@ -55,9 +55,9 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-md h-full bg-[var(--surface)] shadow-2xl flex flex-col animate-slideRight border-l border-[var(--border)]">
+      <div className="relative w-full max-w-md h-full bg-[var(--surface)] shadow-2xl flex flex-col animate-slideRight border-l border-(--border)">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
+        <div className="flex items-center justify-between p-5 border-b border-(--border)">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style={{ background: 'var(--primary-light)' }}>
               🛒
@@ -103,8 +103,8 @@ export default function Cart({ isOpen, onClose }: CartProps) {
             </div>
           ) : (
             <div className="py-2">
-              {items.map((_, index) => (
-                <CartItemRow key={index} index={index} />
+              {items.map((item) => (
+                <CartItemRow key={item.id} item={item} />
               ))}
             </div>
           )}

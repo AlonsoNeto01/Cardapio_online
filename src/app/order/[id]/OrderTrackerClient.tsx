@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { getOrderById } from '@/lib/actions/orders';
 import { formatCurrency } from '@/lib/utils';
 import type { Order, OrderStatus } from '@/lib/types';
 import { ORDER_STATUS_LABELS, PAYMENT_METHOD_LABELS } from '@/lib/types';
@@ -36,45 +36,36 @@ const STATUS_CONFIG: Record<OrderStatus, { icon: string; description: string }> 
 export default function OrderTrackerClient({ initialOrder }: OrderTrackerClientProps) {
   const router = useRouter();
   const [order, setOrder] = useState<Order>(initialOrder);
-  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
-    // If initially loaded as completed, clear it
+    // Se o pedido já inicia concluído, limpa do localStorage
     if (order.status === 'concluido') {
       localStorage.removeItem('frutasmix-active-order');
+      return;
     }
 
-    // Setup realtime subscription
-    const channel = supabase
-      .channel(`order-${order.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'orders',
-          filter: `id=eq.${order.id}`,
-        },
-        (payload) => {
-          setOrder((prev) => {
-            const newOrder = { ...prev, ...payload.new } as Order;
-            
-            // Clear active order from localStorage if completed
-            if (newOrder.status === 'concluido') {
+    // Polling a cada 8 segundos para consultar o status atualizado do pedido
+    const intervalId = setInterval(async () => {
+      const result = await getOrderById(order.id);
+      if (result?.data) {
+        const updatedOrder = result.data as Order;
+        setOrder((prev) => {
+          if (prev.status !== updatedOrder.status) {
+            if (updatedOrder.status === 'concluido') {
               localStorage.removeItem('frutasmix-active-order');
               window.dispatchEvent(new Event('frutasmix-order-update'));
             }
-            
-            return newOrder;
-          });
-        }
-      )
-      .subscribe();
+            return updatedOrder;
+          }
+          return prev;
+        });
+      }
+    }, 8000);
 
     return () => {
-      supabase.removeChannel(channel);
+      clearInterval(intervalId);
     };
-  }, [order.id, supabase]);
+  }, [order.id, order.status]);
 
   const currentStepIndex = STATUS_STEPS.indexOf(order.status);
 
