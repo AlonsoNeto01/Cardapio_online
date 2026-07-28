@@ -102,6 +102,9 @@ export default function CheckoutForm({ isStoreOpen, defaultDeliveryFee, whatsapp
         localStorage.setItem('frutasmix-active-order', result.orderId);
       }
 
+      // Salvar snapshot do pedido para "Repetir último pedido"
+      localStorage.setItem('frutasmix-last-order', JSON.stringify(items));
+
       // Gerar link WhatsApp se tiver número configurado
       let generatedUrl = '';
       if (whatsappNumber) {

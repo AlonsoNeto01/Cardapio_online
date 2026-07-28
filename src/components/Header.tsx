@@ -6,13 +6,20 @@ import { useCart } from '@/contexts/CartContext';
 import { useStore } from '@/contexts/StoreContext';
 import { getSupabaseImageUrl } from '@/lib/utils';
 import ThemeToggle from './ThemeToggle';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Cart from './Cart';
 
 export default function Header() {
   const { itemCount } = useCart();
   const { storeName, logoUrl } = useStore();
   const [cartOpen, setCartOpen] = useState(false);
+
+  // Permitir que outros componentes abram o carrinho via evento custom
+  useEffect(() => {
+    const handleOpenCart = () => setCartOpen(true);
+    window.addEventListener('frutasmix:open-cart', handleOpenCart);
+    return () => window.removeEventListener('frutasmix:open-cart', handleOpenCart);
+  }, []);
 
   const resolvedLogoUrl = logoUrl ? getSupabaseImageUrl(logoUrl) : null;
 

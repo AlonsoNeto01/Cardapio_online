@@ -5,6 +5,7 @@ import { getStoreSettings } from '@/lib/actions/store-settings';
 import { getSupabaseImageUrl } from '@/lib/utils';
 import Image from 'next/image';
 import Header from '@/components/Header';
+import RepeatLastOrderBanner from '@/components/RepeatLastOrderBanner';
 import HomeClient from './HomeClient';
 import HomeCatalog from './HomeCatalog';
 import type { Category, Product } from '@/lib/types';
@@ -102,6 +103,11 @@ export default async function Home() {
       </section>
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4">
+        {/* Repetir último pedido */}
+        <div className="mb-6">
+          <RepeatLastOrderBanner products={products} />
+        </div>
+
         {/* Highlights */}
         {products.some((p) => p.is_highlight) && (
           <section className="mb-10">
