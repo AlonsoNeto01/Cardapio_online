@@ -10,7 +10,13 @@ import HomeClient from './HomeClient';
 import HomeCatalog from './HomeCatalog';
 import type { Category, Product } from '@/lib/types';
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const initialProductId = typeof resolvedSearchParams.produto === 'string' ? resolvedSearchParams.produto : undefined;
   const [categoriesResult, productsResult, storeStatus, settingsResult] = await Promise.all([
     getCategories(),
     getActiveProducts(),
@@ -129,7 +135,7 @@ export default async function Home() {
         )}
 
         {/* Catálogo com Busca Única */}
-        <HomeCatalog categories={categories} products={products} />
+        <HomeCatalog categories={categories} products={products} initialProductId={initialProductId} />
 
         {products.length === 0 && (
           <div className="text-center py-20 animate-fadeIn">

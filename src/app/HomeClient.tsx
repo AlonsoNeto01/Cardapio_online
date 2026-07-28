@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Category, Product } from '@/lib/types';
 import CategorySection from '@/components/CategorySection';
 import ProductCard from '@/components/ProductCard';
@@ -11,6 +11,7 @@ interface HomeClientProps {
   products: Product[];
   isHighlightSection?: boolean;
   searchQuery?: string;
+  initialProductId?: string;
 }
 
 export default function HomeClient({
@@ -18,8 +19,18 @@ export default function HomeClient({
   products,
   isHighlightSection,
   searchQuery = '',
+  initialProductId,
 }: HomeClientProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Auto-abrir modal se veio de um link de compartilhamento (?produto=ID)
+  useEffect(() => {
+    if (initialProductId) {
+      const product = products.find((p) => p.id === initialProductId);
+      if (product) setSelectedProduct(product);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Client-side search filter
   const filteredProducts = useMemo(() => {

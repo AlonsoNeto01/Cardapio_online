@@ -7,9 +7,10 @@ import HomeClient from './HomeClient';
 interface HomeCatalogProps {
   categories: Category[];
   products: Product[];
+  initialProductId?: string;
 }
 
-export default function HomeCatalog({ categories, products }: HomeCatalogProps) {
+export default function HomeCatalog({ categories, products, initialProductId }: HomeCatalogProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const uncategorizedProducts = useMemo(
@@ -90,6 +91,7 @@ export default function HomeCatalog({ categories, products }: HomeCatalogProps) 
         categories={allCategories}
         products={products}
         searchQuery={searchQuery}
+        initialProductId={initialProductId}
       />
     </>
   );
