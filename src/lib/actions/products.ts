@@ -138,3 +138,18 @@ export async function deleteProduct(productId: string) {
   revalidatePath('/admin');
   return { success: true };
 }
+
+export async function toggleProductAvailability(productId: string, is_available: boolean) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('products')
+    .update({ is_available })
+    .eq('id', productId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath('/');
+  revalidatePath('/admin');
+  return { success: true };
+}

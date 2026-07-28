@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Product, Category } from '@/lib/types';
 import { formatCurrency, getSupabaseImageUrl } from '@/lib/utils';
-import { deleteProduct } from '@/lib/actions/products';
+import { deleteProduct, toggleProductAvailability } from '@/lib/actions/products';
 import { createCategory, deleteCategory } from '@/lib/actions/categories';
 import ProductForm from './ProductForm';
 import Modal from '../ui/Modal';
@@ -25,6 +25,7 @@ export default function ProductTable({ initialProducts, initialCategories }: Pro
   const [showForm, setShowForm] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [addonsProduct, setAddonsProduct] = useState<Product | null>(null);
+  const [togglingAvailability, setTogglingAvailability] = useState<string | null>(null);
   const [newCategory, setNewCategory] = useState('');
   const [catLoading, setCatLoading] = useState(false);
 
@@ -34,6 +35,18 @@ export default function ProductTable({ initialProducts, initialCategories }: Pro
     if (!result.error) {
       setProducts((prev) => prev.filter((p) => p.id !== id));
     }
+  };
+
+  const handleToggleAvailability = async (product: Product) => {
+    setTogglingAvailability(product.id);
+    const newValue = !product.is_available;
+    const result = await toggleProductAvailability(product.id, newValue);
+    if (!result.error) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, is_available: newValue } : p))
+      );
+    }
+    setTogglingAvailability(null);
   };
 
   const handleSuccess = () => {
@@ -115,6 +128,7 @@ export default function ProductTable({ initialProducts, initialCategories }: Pro
                 <th className="text-left py-3 px-2 font-semibold text-gray-500 dark:text-gray-400">Preço</th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-500 dark:text-gray-400">Categoria</th>
                 <th className="text-left py-3 px-2 font-semibold text-gray-500 dark:text-gray-400">Status</th>
+                <th className="text-left py-3 px-2 font-semibold text-gray-500 dark:text-gray-400">Disponível</th>
                 <th className="text-right py-3 px-2 font-semibold text-gray-500 dark:text-gray-400">Ações</th>
               </tr>
             </thead>
@@ -169,6 +183,32 @@ export default function ProductTable({ initialProducts, initialCategories }: Pro
                           : 'bg-gray-100 text-gray-500 dark:bg-neutral-800 dark:text-gray-500'
                       }`}>
                         {product.is_active ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-2">
+                      <button
+                        onClick={() => handleToggleAvailability(product)}
+                        disabled={togglingAvailability === product.id}
+                        className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                        style={{
+                          backgroundColor: product.is_available ? '#3b82f6' : '#d1d5db',
+                          opacity: togglingAvailability === product.id ? 0.5 : 1,
+                        }}
+                        title={product.is_available ? 'Disponível hoje' : 'Esgotado hoje'}
+                        aria-label={product.is_available ? 'Marcar como esgotado' : 'Marcar como disponível'}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                            product.is_available ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                      <span className={`block text-[10px] mt-0.5 font-medium ${
+                        product.is_available
+                          ? 'text-blue-600 dark:text-blue-400'
+                          : 'text-gray-400 dark:text-gray-500'
+                      }`}>
+                        {product.is_available ? 'Disponível' : 'Esgotado'}
                       </span>
                     </td>
                     <td className="py-3 px-2 text-right">

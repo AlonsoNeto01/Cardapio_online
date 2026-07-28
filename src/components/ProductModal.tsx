@@ -226,9 +226,17 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
       </div>
 
       {/* Quantity + Add */}
-      <div className="mt-5 flex items-center gap-4">
+      {product.is_available === false && (
+        <div className="mt-5 flex items-center gap-2 px-4 py-3 rounded-xl bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700">
+          <span className="text-sm">😴</span>
+          <span className="text-sm font-medium text-[var(--muted)]">
+            Este produto está esgotado no momento.
+          </span>
+        </div>
+      )}
+      <div className="mt-3 flex items-center gap-4">
         {/* Quantity Selector */}
-        <div className="flex items-center border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--surface-elevated)]">
+        <div className={`flex items-center border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--surface-elevated)] ${product.is_available === false ? 'opacity-40 pointer-events-none' : ''}`}>
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
             className="w-11 h-11 flex items-center justify-center text-[var(--muted)] hover:bg-[var(--primary-light)] hover:text-[var(--primary)] transition-colors text-lg font-bold"
@@ -249,8 +257,10 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
         </div>
 
         {/* Add Button */}
-        <Button onClick={handleAdd} disabled={!canAdd} className="flex-1" size="lg" id="add-to-cart-btn">
-          Adicionar · {formatCurrency((Number(product.price) + totalAddonsPrice) * quantity)}
+        <Button onClick={handleAdd} disabled={!canAdd || product.is_available === false} className="flex-1" size="lg" id="add-to-cart-btn">
+          {product.is_available === false
+            ? '😴 Esgotado hoje'
+            : `Adicionar · ${formatCurrency((Number(product.price) + totalAddonsPrice) * quantity)}`}
         </Button>
       </div>
     </Modal>
