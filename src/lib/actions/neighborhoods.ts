@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
-import type { DeliveryNeighborhood } from '@/lib/types';
 
 export async function getNeighborhoods() {
   const supabase = await createClient();

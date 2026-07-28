@@ -22,16 +22,16 @@ export default function AddonsModal({ product, onClose }: AddonsModalProps) {
   const [maxChoices, setMaxChoices] = useState(1);
   const [creatingGroup, setCreatingGroup] = useState(false);
 
-  useEffect(() => {
-    loadGroups();
-  }, [product.id]);
-
   const loadGroups = async () => {
     setLoading(true);
     const { data } = await getAddonGroupsByProduct(product.id);
     if (data) setGroups(data);
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadGroups();
+  }, [product.id]);
 
   const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();

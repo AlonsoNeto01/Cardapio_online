@@ -23,6 +23,14 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
   const [shareStatus, setShareStatus] = useState<'idle' | 'copied'>('idle');
   const { addItem } = useCart();
 
+  const fetchAddons = async () => {
+    if (!product) return;
+    setLoadingAddons(true);
+    const { data } = await getAddonGroupsByProduct(product.id);
+    if (data) setAddonGroups(data);
+    setLoadingAddons(false);
+  };
+
   useEffect(() => {
     if (product) {
       setQuantity(1);
@@ -31,14 +39,6 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
       fetchAddons();
     }
   }, [product]);
-
-  const fetchAddons = async () => {
-    if (!product) return;
-    setLoadingAddons(true);
-    const { data } = await getAddonGroupsByProduct(product.id);
-    if (data) setAddonGroups(data);
-    setLoadingAddons(false);
-  };
 
   const handleAddonSelect = (group: AddonGroup, item: AddonItem) => {
     setSelectedAddons(prev => {

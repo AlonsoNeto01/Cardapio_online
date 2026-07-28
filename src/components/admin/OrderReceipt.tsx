@@ -48,7 +48,7 @@ export default function OrderReceipt({ order }: OrderReceiptProps) {
             </div>
             {item.addons && Array.isArray(item.addons) && item.addons.length > 0 && (
               <div style={{ fontSize: '10px', paddingLeft: '8px' }}>
-                {item.addons.map((a: any, i: number) => (
+                {item.addons.map((a: { name: string }, i: number) => (
                   <div key={i}>+ {a.name}</div>
                 ))}
               </div>

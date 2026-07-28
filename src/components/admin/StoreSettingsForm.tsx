@@ -107,9 +107,10 @@ export default function StoreSettingsForm({ initialSettings }: StoreSettingsForm
         logoFileRef.current = null;
         coverFileRef.current = null;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setMessage(`Erro: ${err.message || 'Erro de conexão ou servidor'}`);
+      const errorMessage = err instanceof Error ? err.message : 'Erro de conexão ou servidor';
+      setMessage(`Erro: ${errorMessage}`);
     } finally {
       setLoading(false);
       setTimeout(() => setMessage(''), 5000);

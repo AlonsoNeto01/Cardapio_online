@@ -73,8 +73,9 @@ export async function updateStoreSettings(formData: FormData) {
     revalidatePath('/checkout');
     revalidatePath('/admin');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in updateStoreSettings:', error);
-    return { error: error.message || 'Ocorreu um erro interno ao salvar.' };
+    const message = error instanceof Error ? error.message : 'Ocorreu um erro interno ao salvar.';
+    return { error: message };
   }
 }
